@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" monitorInterval="30">
+
+    <!-- Define properties to reuse in file paths -->
+    <Properties>
+        <Property name="LOG_PATH">./logs</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] %c{1} - %m%n</Property>
+    </Properties>
+
+    <!-- Appendres are output destinations -->
+    <Appenders>
+
+        <!-- Console Output -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- Simple Log File -->
+        <File name="FileLogger" fileName="${LOG_PATH}/application.log" append="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+
+        <!-- Rolling File with Size-based rotation -->
+        <RollingFile name="RollingFile"
+                     fileName="${LOG_PATH}/automation.log"
+                     filePattern="${LOG_PATH}/automation-%d{yyyy-MM-dd}-%i.log.gz">
+
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+
+            <Policies>
+                <!-- Rotate daily + when file exceeds 10 MB -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50000"/>
+            </Policies>
+
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <!-- Loggers control what gets logged -->
+    <Loggers>
+
+        <!-- For test automation packages (update package name) -->
+        <Logger name="com.automation" level="Debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
+        <!-- Root Logger -->
+        <Root level="Debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>
